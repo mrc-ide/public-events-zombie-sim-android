@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ZombieSim</string>
+    <string name="virus">Virus</string>
+    <string name="vaccination">Vaccination</string>
+    <string name="seeding">Seeding</string>
+    <string name="number_of_seeds">Number of seeds</string>
+    <string name="within_distance">Within distance</string>
+</resources>

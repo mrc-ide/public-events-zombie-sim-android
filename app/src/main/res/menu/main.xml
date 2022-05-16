@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:zombiesim="http://schemas.android.com/apl/res-auto">
+
+
+    <item
+        android:title="Check for updates"
+        android:id="@+id/update_check_menu"
+        android:orderInCategory="100"
+        zombiesim:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/server_url_menu"
+        android:orderInCategory="100"
+        zombiesim:showAsAction="never"
+        android:title="Set Zombie Server"/>
+
+    <item
+        android:id="@+id/about_menu"
+        android:orderInCategory="100"
+        zombiesim:showAsAction="never"
+        android:title="About"/>
+
+</menu>
