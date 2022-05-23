@@ -19,21 +19,13 @@ class ZombieFragmentPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                VirusTab virusTab = new VirusTab();
-                virusTab.parent = (MainActivity) context;
-                return virusTab;
+                return new VirusTab();
             case 1:
-                VaccinationTab vaccTab = new VaccinationTab();
-                vaccTab.parent = (MainActivity) context;
-                return vaccTab;
+                return new VaccinationTab();
             case 2:
-                SeedingTab seedTab = new SeedingTab();
-                seedTab.parent = (MainActivity) context;
-                return seedTab;
+                return new SeedingTab();
             case 3:
-                RunTab runTab = new RunTab();
-                runTab.parent = (MainActivity) context;
-                return runTab;
+                return new RunTab();
             default:
                 return null;
         }

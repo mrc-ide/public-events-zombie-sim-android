@@ -3,6 +3,7 @@ package com.mrc.zombiesim;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
 
 import android.support.v7.app.AppCompatActivity;
@@ -33,9 +34,10 @@ public class MainActivity extends AppCompatActivity {
     int maximumPoolSize = 80;
     int keepAliveTime = 10;
 
-    String serverName = "http://192.168.1.15:8080/";
+    String serverName;
 
     BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>(maximumPoolSize);
+
     Executor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize,
             keepAliveTime, TimeUnit.SECONDS, workQueue);
 
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     TabLayout tabLayout;
     ZombieViewPager viewPager;
+    ZombieFragmentPagerAdapter adapter;
+
 
     /************************************************************/
     /* The popup menu - Check for Updates, Set Server, or About */
@@ -128,6 +132,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Load preferences
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        serverName = settings.getString("server", "http://192.168.1.15:8080/");
+
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
         tabLayout.addTab(tabLayout.newTab().setText("Virus"));
@@ -135,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText("Seeding"));
         tabLayout.addTab(tabLayout.newTab().setText("Simulation"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        final ZombieFragmentPagerAdapter adapter;
         adapter = new ZombieFragmentPagerAdapter(this, getSupportFragmentManager(),
                 tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
@@ -156,6 +165,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
 
     @Override
@@ -164,4 +175,23 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+    // Save preferences on stopping
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // We need an Editor object to make preference changes.
+        // All objects are from android.context.Context
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("server", serverName);
+        // Commit the edits!
+        editor.apply();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
 }

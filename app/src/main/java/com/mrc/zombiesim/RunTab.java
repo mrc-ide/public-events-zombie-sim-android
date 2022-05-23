@@ -9,8 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 public class RunTab extends Fragment {
-    MainActivity parent;
-
     public RunTab() {
         // Required empty public constructor
     }
@@ -35,6 +33,7 @@ public class RunTab extends Fragment {
                 // For deleting, we want a shorter pause, and only to disable the
                 // button just pushed - for a "positive" effect rather than any
                 // functional reason...
+                MainActivity parent = (MainActivity) getActivity();
                 parent.runOnUiThread(new Runnable() {
                     public void run() {
                         if (net_msg.startsWith("R")) {
