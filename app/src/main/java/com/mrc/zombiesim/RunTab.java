@@ -12,10 +12,25 @@ public class RunTab extends Fragment {
         // Required empty public constructor
     }
 
-    protected static void modImage(MainActivity parent, int id_comp, int id_draw, boolean enab) {
-        ImageView iv = parent.findViewById(id_comp);
-        iv.setImageResource(id_draw);
-        iv.setEnabled(enab);
+    protected static void modImage(MainActivity parent, int id_button,
+                                   int id_ready, int id_busy, boolean busy) {
+        ImageView iv = parent.findViewById(id_button);
+        if (iv != null) {
+            iv.setImageResource(busy?id_busy:id_ready);
+            iv.setEnabled(!busy);
+        }
+    }
+
+    public static void updateButtons(MainActivity parent) {
+        RunTab.modImage(parent, R.id.run_red, R.drawable.run_red, R.drawable.run_grey, parent.state_busy);
+        RunTab.modImage(parent, R.id.run_green, R.drawable.run_green, R.drawable.run_grey, parent.state_busy);
+        RunTab.modImage(parent, R.id.run_yellow, R.drawable.run_yellow, R.drawable.run_grey, parent.state_busy);
+        RunTab.modImage(parent, R.id.run_cyan, R.drawable.run_cyan, R.drawable.run_grey, parent.state_busy);
+        RunTab.modImage(parent, R.id.bin_red, R.drawable.bin_red, R.drawable.bin_grey, parent.state_busy);
+        RunTab.modImage(parent, R.id.bin_green, R.drawable.bin_green, R.drawable.bin_grey, parent.state_busy);
+        RunTab.modImage(parent, R.id.bin_yellow, R.drawable.bin_yellow, R.drawable.bin_grey, parent.state_busy);
+        RunTab.modImage(parent, R.id.bin_cyan, R.drawable.bin_cyan, R.drawable.bin_grey, parent.state_busy);
+
     }
 
     private void addButtonEvent(View v, int id, String net_msg) {
@@ -34,27 +49,18 @@ public class RunTab extends Fragment {
             MainActivity parent = (MainActivity) getActivity();
             assert parent != null;
             parent.runOnUiThread(() -> {
-                if (net_msg.startsWith("R")) {
-                    RunTab.modImage(parent, R.id.run_red, R.drawable.run_grey, false);
-                    RunTab.modImage(parent, R.id.run_green, R.drawable.run_grey, false);
-                    RunTab.modImage(parent, R.id.run_yellow, R.drawable.run_grey, false);
-                    RunTab.modImage(parent, R.id.run_cyan, R.drawable.run_grey, false);
+                if (parent.state_busy) {
+                    updateButtons(parent);
+                }
+                else {
+                    parent.state_busy = true;
+                    updateButtons(parent);
+                    parent.sendParams(v1, net_msg);
                 }
 
-                if ((net_msg.startsWith("R")) || (net_msg.equals("D0")))
-                    RunTab.modImage(parent, R.id.bin_red, R.drawable.bin_grey, false);
-                if ((net_msg.startsWith("R")) || (net_msg.equals("D1")))
-                    RunTab.modImage(parent, R.id.bin_green, R.drawable.bin_grey, false);
-                if ((net_msg.startsWith("R")) || (net_msg.equals("D2")))
-                    RunTab.modImage(parent, R.id.bin_yellow, R.drawable.bin_grey, false);
-                if ((net_msg.startsWith("R")) || (net_msg.equals("D3")))
-                    RunTab.modImage(parent, R.id.bin_cyan, R.drawable.bin_grey, false);
             });
-
-            parent.sendParams(v1, net_msg);
-
-            });
-        }
+        });
+    }
 
         @Override
         public View onCreateView (LayoutInflater inflater, ViewGroup container,
@@ -69,8 +75,11 @@ public class RunTab extends Fragment {
             addButtonEvent(v, R.id.bin_green, "D1");
             addButtonEvent(v, R.id.bin_yellow, "D2");
             addButtonEvent(v, R.id.bin_cyan, "D3");
-
+            MainActivity ma = (MainActivity) getActivity();
+            assert ma != null;
+            ma.runOnUiThread(() -> updateButtons(ma));
 
             return v;
         }
+
     }

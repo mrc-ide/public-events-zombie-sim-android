@@ -9,19 +9,18 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 
 public class MobilityTab extends Fragment {
-    // It seems we can't rely on the fragment UI to still exist
-    // when saving the state. So we'll copy it to our own state.
 
     public MobilityTab() {
         // Required empty public constructor
     }
 
-    private void addMobilityRadio(RadioButton rb, int id) {
+    private void addMobilityRadio(RadioButton rb, int id, boolean checked) {
         MainActivity ma = (MainActivity) super.getActivity();
         rb.setOnClickListener(v1 -> {
             assert ma != null;
             ma.state_mobility = id;
         });
+        rb.setChecked(checked);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,17 +35,17 @@ public class MobilityTab extends Fragment {
         RadioButton rb_fast = v.findViewById(R.id.mobility_fast);
         RadioButton rb_fly = v.findViewById(R.id.mobility_fly);
 
-        addMobilityRadio(rb_slow, 1);
-        addMobilityRadio(rb_med, 2);
-        addMobilityRadio(rb_fast, 3);
-        addMobilityRadio(rb_fly, 4);
+        addMobilityRadio(rb_slow, 1, ma.state_mobility == 1);
+        addMobilityRadio(rb_med, 2, ma.state_mobility == 2);
+        addMobilityRadio(rb_fast, 3, ma.state_mobility == 3);
+        addMobilityRadio(rb_fly, 4, ma.state_mobility == 4);
 
         // Retrieve settings after a rotate
-
+/*
         if (savedInstanceState != null) {
             ma.state_mobility = savedInstanceState.getInt("mobility");
         }
-
+*/
         // Copy init to state
 
         if (rb_slow.isChecked()) ma.state_mobility = 1;
@@ -56,7 +55,7 @@ public class MobilityTab extends Fragment {
 
         return v;
     }
-
+/*
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -64,5 +63,5 @@ public class MobilityTab extends Fragment {
         assert ma != null;
         outState.putInt("mobility", ma.state_mobility);
     }
-
+*/
 }

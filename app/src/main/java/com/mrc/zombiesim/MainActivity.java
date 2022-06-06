@@ -76,9 +76,13 @@ public class MainActivity extends AppCompatActivity {
     int state_seed_dist_progress;
     int state_seed_city_index;
 
-    int state_mobility;
+    int state_mobility = 1;
+
+    boolean state_busy = false;
 
     public void sendParams(View v, String run_msg) {
+        if (run_msg.equals("")) run_msg = "0";
+
         String params = "R0;Tinf;vaccpc;vaccrad;vacccity;seeds;seedrad;seedcity;mobility;net_msg";
         String vals = state_r0 + ";" + state_tinf + ";" +
                       state_vacc_progress + ";" + state_vacc_dist_progress + ";" + state_vacc_city_index + ";" +

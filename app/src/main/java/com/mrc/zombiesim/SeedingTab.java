@@ -37,6 +37,7 @@ public class SeedingTab extends Fragment {
                 assert ma != null;
                 ma.state_no_seeds = String.valueOf(seeds_val.getText());
                 ma.state_no_seeds_progress = seeds_seek.getProgress();
+                System.out.println("SEED_SEEK CHANGED");
                 ma.sendParams(v, "");
             }
 
@@ -61,8 +62,8 @@ public class SeedingTab extends Fragment {
                 assert ma != null;
                 ma.state_seed_dist_progress = seed_dist_seek.getProgress();
                 ma.state_seed_dist = String.valueOf(seed_dist_val.getText());
+                System.out.println("SEED_DIST CHANGED");
                 ma.sendParams(v, "");
-
 
             }
 
@@ -85,8 +86,11 @@ public class SeedingTab extends Fragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 MainActivity ma = (MainActivity) getActivity();
                 assert ma != null;
-                ma.state_seed_city_index = i;
-                ma.sendParams(v, "");
+                if (ma.state_seed_city_index != i) {
+                    ma.state_seed_city_index = i;
+                    System.out.println("SEED_CITY CHANGED");
+                    ma.sendParams(v, "");
+                }
 
             }
 
@@ -97,7 +101,7 @@ public class SeedingTab extends Fragment {
         });
 
         // Retrieve settings after a rotate
-
+/*
         if (savedInstanceState != null) {
             ma.state_no_seeds_progress = savedInstanceState.getInt("seed");
             ma.state_no_seeds = savedInstanceState.getString("seed_text");
@@ -112,7 +116,7 @@ public class SeedingTab extends Fragment {
             seed_city_spinner.setSelection(ma.state_seed_city_index);
 
         }
-
+*/
         // Copy init to state
 
         ma.state_no_seeds = String.valueOf(seeds_val.getText());
@@ -123,7 +127,7 @@ public class SeedingTab extends Fragment {
 
         return v;
     }
-
+/*
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -135,5 +139,5 @@ public class SeedingTab extends Fragment {
         outState.putString("seed_dist_text", ma.state_seed_dist);
         outState.putInt("seed_sel", ma.state_seed_city_index);
     }
-
+*/
 }

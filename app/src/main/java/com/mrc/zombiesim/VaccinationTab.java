@@ -40,6 +40,7 @@ public class VaccinationTab extends Fragment {
                 assert ma != null;
                 ma.state_vacc = String.valueOf(vacc_cov_val.getText());
                 ma.state_vacc_progress = vacc_cov_seek.getProgress();
+                System.out.println("VACC_COV_SEEK CHANGED");
                 ma.sendParams(v, "");
             }
 
@@ -66,6 +67,7 @@ public class VaccinationTab extends Fragment {
                 assert ma != null;
                 ma.state_vacc_dist_progress = vacc_dist_seek.getProgress();
                 ma.state_vacc_dist = String.valueOf(vacc_dist_val.getText());
+                System.out.println("VACC_DIST_SEEK CHANGED");
                 ma.sendParams(v, "");
 
                 //http://127.0.0.1:8080/?cmd=set&param=vaccpc&value=45
@@ -90,8 +92,11 @@ public class VaccinationTab extends Fragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 MainActivity ma = (MainActivity) getActivity();
                 assert ma != null;
-                ma.state_vacc_city_index = i;
-                ma.sendParams(v, "");
+                if (ma.state_vacc_city_index != i) {
+                    ma.state_vacc_city_index = i;
+                    System.out.println("VACC_CITY_SPINNER CHANGED");
+                    ma.sendParams(v, "");
+                }
 
             }
 
@@ -103,7 +108,7 @@ public class VaccinationTab extends Fragment {
         });
 
         // Retrieve settings after a rotate
-
+/*
         if (savedInstanceState != null) {
             ma.state_vacc_progress = savedInstanceState.getInt("vacc");
             ma.state_vacc = savedInstanceState.getString("vacc_text");
@@ -117,7 +122,7 @@ public class VaccinationTab extends Fragment {
             vacc_dist_val.setText(ma.state_vacc_dist);
             vacc_city_spinner.setSelection(ma.state_vacc_city_index);
         }
-
+*/
         // Copy init to state
 
         ma.state_vacc = String.valueOf(vacc_cov_val.getText());
@@ -129,7 +134,7 @@ public class VaccinationTab extends Fragment {
 
         return v;
     }
-
+/*
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -141,5 +146,5 @@ public class VaccinationTab extends Fragment {
         outState.putString("vacc_dist_text", ma.state_vacc_dist);
         outState.putInt("vacc_sel", ma.state_vacc_city_index);
     }
-
+*/
 }

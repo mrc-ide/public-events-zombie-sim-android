@@ -42,6 +42,7 @@ public class VirusTab extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 ma.state_r0 = String.valueOf(r0_val.getText());
                 ma.state_r0_progress = r0_seek.getProgress();
+                System.out.println("R0 CHANGED");
                 ma.sendParams(v, "");
 
             }
@@ -66,6 +67,7 @@ public class VirusTab extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 ma.state_tinf = String.valueOf(tinf_val.getText());
                 ma.state_tinf_progress = tinf_seek.getProgress();
+                System.out.println("TINF CHANGED");
                 ma.sendParams(v, "");
 
                 //http://127.0.0.1:8080/?cmd=set&param=Tinf&value=2
@@ -82,7 +84,7 @@ public class VirusTab extends Fragment {
         });
 
         // Retrieve settings after a rotate
-
+/*
         if (savedInstanceState != null) {
             ma.state_r0 = savedInstanceState.getString("r0_text");
             ma.state_r0_progress = savedInstanceState.getInt("r0");
@@ -94,7 +96,7 @@ public class VirusTab extends Fragment {
             tinf_val.setText(ma.state_tinf);
             tinf_seek.setProgress(ma.state_tinf_progress);
         }
-
+*/
         // Copy init to state
 
         ma.state_r0_progress = r0_seek.getProgress();
@@ -104,7 +106,7 @@ public class VirusTab extends Fragment {
 
         return v;
     }
-
+/*
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -115,5 +117,5 @@ public class VirusTab extends Fragment {
         outState.putInt("tinf", ma.state_tinf_progress);
         outState.putString("tinf_text", ma.state_tinf);
     }
-
+*/
 }

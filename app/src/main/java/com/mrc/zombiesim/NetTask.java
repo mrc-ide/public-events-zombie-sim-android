@@ -68,14 +68,8 @@ public class NetTask extends AsyncTask<String, Void, String> {
             result = readStream(con.getInputStream());
             if (result.equals("STOP_WAITING")) {
                 parent.runOnUiThread(() -> {
-                    RunTab.modImage(parent, R.id.run_red, R.drawable.run_red, true);
-                    RunTab.modImage(parent, R.id.run_green, R.drawable.run_green, true);
-                    RunTab.modImage(parent, R.id.run_yellow, R.drawable.run_yellow, true);
-                    RunTab.modImage(parent, R.id.run_cyan, R.drawable.run_cyan, true);
-                    RunTab.modImage(parent, R.id.bin_red, R.drawable.bin_red, true);
-                    RunTab.modImage(parent, R.id.bin_green, R.drawable.bin_green, true);
-                    RunTab.modImage(parent, R.id.bin_yellow, R.drawable.bin_yellow, true);
-                    RunTab.modImage(parent, R.id.bin_cyan, R.drawable.bin_cyan, true);
+                    parent.state_busy = false;
+                    RunTab.updateButtons(parent);
                 });
 
             } else if (result.equals("WAIT")) {
