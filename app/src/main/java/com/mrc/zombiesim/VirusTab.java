@@ -1,30 +1,23 @@
 package com.mrc.zombiesim;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
-
 public class VirusTab extends Fragment {
     // It seems we can't rely on the fragment UI to still exist
     // when saving the state. So we'll copy it to our own state.
 
-    String state_r0;
-    int state_r0_progress;
-    String state_tinf;
-    int state_tinf_progress;
-
     String getProgress(int progress, float factor) {
-        String r0 = String.valueOf(Math.round(100 + (progress * factor)));
-        while (r0.length() < 3) r0 = "0" + r0;
-        r0 = "" + r0.charAt(0) + "." + r0.substring(1);
-        return r0;
+        StringBuilder r0 = new StringBuilder(String.valueOf(Math.round(100 + (progress * factor))));
+        while (r0.length() < 3) r0.insert(0, "0");
+        r0 = new StringBuilder("" + r0.charAt(0) + "." + r0.substring(1));
+        return r0.toString();
     }
 
     public VirusTab() {
@@ -36,6 +29,8 @@ public class VirusTab extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_virus, container, false);
+        MainActivity ma = (MainActivity) super.getActivity();
+        assert ma != null;
 
         // Move the R0 seekbar
 
@@ -45,13 +40,10 @@ public class VirusTab extends Fragment {
         r0_seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                MainActivity ma = (MainActivity) getActivity();
-                state_r0 = String.valueOf(r0_val.getText());
-                state_r0_progress = r0_seek.getProgress();
-                new NetTask(v, ma).executeOnExecutor(ma.threadPoolExecutor,
-                        ma.serverName + "?cmd=set&param=R0&value=" + state_r0);
+                ma.state_r0 = String.valueOf(r0_val.getText());
+                ma.state_r0_progress = r0_seek.getProgress();
+                ma.sendParams(v, "");
 
-                //http://127.0.0.1:8080/?cmd=set&param=R0&value=2
             }
 
             @Override
@@ -72,11 +64,9 @@ public class VirusTab extends Fragment {
         tinf_seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                MainActivity ma = (MainActivity) getActivity();
-                state_tinf = String.valueOf(tinf_val.getText());
-                state_tinf_progress = tinf_seek.getProgress();
-                new NetTask(v, ma).executeOnExecutor(ma.threadPoolExecutor,
-                        ma.serverName + "?cmd=set&param=Tinf&value=" + state_tinf);
+                ma.state_tinf = String.valueOf(tinf_val.getText());
+                ma.state_tinf_progress = tinf_seek.getProgress();
+                ma.sendParams(v, "");
 
                 //http://127.0.0.1:8080/?cmd=set&param=Tinf&value=2
             }
@@ -94,34 +84,36 @@ public class VirusTab extends Fragment {
         // Retrieve settings after a rotate
 
         if (savedInstanceState != null) {
-            state_r0 = savedInstanceState.getString("r0_text");
-            state_r0_progress = savedInstanceState.getInt("r0");
-            state_tinf = savedInstanceState.getString("tinf_text");
-            state_tinf_progress = savedInstanceState.getInt("tinf");
+            ma.state_r0 = savedInstanceState.getString("r0_text");
+            ma.state_r0_progress = savedInstanceState.getInt("r0");
+            ma.state_tinf = savedInstanceState.getString("tinf_text");
+            ma.state_tinf_progress = savedInstanceState.getInt("tinf");
 
-            r0_val.setText(state_r0);
-            r0_seek.setProgress(state_r0_progress);
-            tinf_val.setText(state_tinf);
-            tinf_seek.setProgress(state_tinf_progress);
+            r0_val.setText(ma.state_r0);
+            r0_seek.setProgress(ma.state_r0_progress);
+            tinf_val.setText(ma.state_tinf);
+            tinf_seek.setProgress(ma.state_tinf_progress);
         }
 
         // Copy init to state
 
-        state_r0_progress = r0_seek.getProgress();
-        state_r0 = String.valueOf(r0_val.getText());
-        state_tinf_progress = tinf_seek.getProgress();
-        state_tinf = String.valueOf(tinf_val.getText());
+        ma.state_r0_progress = r0_seek.getProgress();
+        ma.state_r0 = String.valueOf(r0_val.getText());
+        ma.state_tinf_progress = tinf_seek.getProgress();
+        ma.state_tinf = String.valueOf(tinf_val.getText());
 
         return v;
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("r0", state_r0_progress);
-        outState.putString("r0_text", state_r0);
-        outState.putInt("tinf", state_tinf_progress);
-        outState.putString("tinf_text", state_tinf);
+        MainActivity ma = (MainActivity) super.getActivity();
+        assert ma != null;
+        outState.putInt("r0", ma.state_r0_progress);
+        outState.putString("r0_text", ma.state_r0);
+        outState.putInt("tinf", ma.state_tinf_progress);
+        outState.putString("tinf_text", ma.state_tinf);
     }
 
 }

@@ -23,8 +23,10 @@ class ZombieFragmentPagerAdapter extends FragmentPagerAdapter {
             case 1:
                 return new VaccinationTab();
             case 2:
-                return new SeedingTab();
+                return new MobilityTab();
             case 3:
+                return new SeedingTab();
+            case 4:
                 return new RunTab();
             default:
                 return null;

@@ -2,15 +2,20 @@ package com.mrc.zombiesim;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.TabLayout;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -50,10 +55,43 @@ public class MainActivity extends AppCompatActivity {
     ZombieViewPager viewPager;
     ZombieFragmentPagerAdapter adapter;
 
+    //////////////////////////////////////////////////////////////
+    // Send all the state to the java client
+    //////////////////////////////////////////////////////////////
 
-    /************************************************************/
-    /* The popup menu - Check for Updates, Set Server, or About */
-    /************************************************************/
+    String state_r0;
+    int state_r0_progress;
+    String state_tinf;
+    int state_tinf_progress;
+
+    String state_vacc;
+    int state_vacc_progress;
+    String state_vacc_dist;
+    int state_vacc_dist_progress;
+    int state_vacc_city_index;
+
+    String state_no_seeds;
+    int state_no_seeds_progress;
+    String state_seed_dist;
+    int state_seed_dist_progress;
+    int state_seed_city_index;
+
+    int state_mobility;
+
+    public void sendParams(View v, String run_msg) {
+        String params = "R0;Tinf;vaccpc;vaccrad;vacccity;seeds;seedrad;seedcity;mobility;net_msg";
+        String vals = state_r0 + ";" + state_tinf + ";" +
+                      state_vacc_progress + ";" + state_vacc_dist_progress + ";" + state_vacc_city_index + ";" +
+                      state_no_seeds + ";" + state_seed_dist_progress + ";" + state_seed_city_index + ";" +
+                      state_mobility + ";" + run_msg;
+
+        new NetTask(v, this).executeOnExecutor(threadPoolExecutor,
+                serverName + "?cmd=set&param=" + params + "&value=" + vals);
+    }
+
+    //////////////////////////////////////////////////////////////
+    // The popup menu - Check for Updates, Set Server, or About //
+    //////////////////////////////////////////////////////////////
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -72,17 +110,14 @@ public class MainActivity extends AppCompatActivity {
             input.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
             input.setText(serverName);
             alert.setView(input);
-            alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    serverName = input.getEditableText().toString();
-                    if (!serverName.toUpperCase().startsWith("HTTP://")) serverName="http://"+serverName;
-                    if (!serverName.endsWith("/")) serverName+="/";
-                } // End of onClick(DialogInterface dialog, int whichButton)
+            // End of onClick(DialogInterface dialog, int whichButton)
+            alert.setPositiveButton("OK", (dialog, whichButton) -> {
+                serverName = input.getEditableText().toString();
+                if (!serverName.toUpperCase().startsWith("HTTP://")) serverName="http://"+serverName;
+                if (!serverName.endsWith("/")) serverName+="/";
             }); //End of alert.setPositiveButton
 
-            alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) { dialog.cancel(); }
-            }); //End of alert.setNegativeButton
+            alert.setNegativeButton("CANCEL", (dialog, whichButton) -> dialog.cancel()); //End of alert.setNegativeButton
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
             return true;
@@ -93,11 +128,7 @@ public class MainActivity extends AppCompatActivity {
             ver.setTitle("Zombie Sim Overlord");
             ver.setMessage("Version: "+version );
             ver.setCancelable(false);
-            ver.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    dialog.cancel();
-                }
-            });
+            ver.setPositiveButton("OK", (dialog, whichButton) -> dialog.cancel());
             AlertDialog ad = ver.create();
             ad.show();
         }
@@ -106,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public static void populate_city_spinner(Spinner spinner, Context c, String first) {
+    public static void populate_city_spinner(Spinner spinner, Context c) {
         ArrayList<String> cities = new ArrayList<>();
 
         try {
@@ -121,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        cities.set(0, first);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(c,
                 android.R.layout.simple_spinner_item, cities);
         adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
@@ -131,7 +161,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.drawable.zombie_app);
+        actionBar.setTitle(Html.fromHtml("&nbsp;&nbsp;&nbsp;<font color='#003e74'>Zombie Spatial Epidemic Simulator</font>"));
+
+        ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#ffffff"));
+        actionBar.setBackgroundDrawable(colorDrawable);
 
         // Load preferences
 
@@ -140,11 +179,13 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
-        tabLayout.addTab(tabLayout.newTab().setText("Virus"));
-        tabLayout.addTab(tabLayout.newTab().setText("Vaccination"));
-        tabLayout.addTab(tabLayout.newTab().setText("Seeding"));
-        tabLayout.addTab(tabLayout.newTab().setText("Simulation"));
+        tabLayout.addTab(tabLayout.newTab().setText(Html.fromHtml("<font color='#ffffff'>Virus</font>")));
+        tabLayout.addTab(tabLayout.newTab().setText(Html.fromHtml("<font color='#ffffff'>Vaccination</font>")));
+        tabLayout.addTab(tabLayout.newTab().setText(Html.fromHtml("<font color='#ffffff'>Mobility</font>")));
+        tabLayout.addTab(tabLayout.newTab().setText(Html.fromHtml("<font color='#ffffff'>Seeding</font>")));
+        tabLayout.addTab(tabLayout.newTab().setText(Html.fromHtml("<font color='#ffffff'>Simulation</font>")));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
         adapter = new ZombieFragmentPagerAdapter(this, getSupportFragmentManager(),
                 tabLayout.getTabCount());
         viewPager.setAdapter(adapter);

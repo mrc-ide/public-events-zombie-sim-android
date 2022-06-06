@@ -1,5 +1,6 @@
 package com.mrc.zombiesim;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.view.View;
@@ -14,10 +15,20 @@ import java.net.URL;
 public class NetTask extends AsyncTask<String, Void, String> {
     //private Exception exception;
 
-    private static Handler progressCheckHandler = new Handler();
-    private static Runnable progressCheckRunner;
-    private View view;
-    private MainActivity parent;
+    private static final Handler progressCheckHandler = new Handler();
+
+    // There are warnings about leaked context here, but I can't immediately
+    // see how to run things on the UI thread from within the doInBackground
+    // call without tracking the view or parent reference like this.
+
+    // Also, AsyncTask appears to be both recommended and deprecated in the
+    // docs in favour of Callable. Migrate at some point...
+
+    @SuppressLint("StaticFieldLeak")
+    private final View view;
+
+    @SuppressLint("StaticFieldLeak")
+    private final MainActivity parent;
 
     public NetTask(View v, MainActivity p) {
         view = v;
@@ -56,32 +67,26 @@ public class NetTask extends AsyncTask<String, Void, String> {
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             result = readStream(con.getInputStream());
             if (result.equals("STOP_WAITING")) {
-                parent.runOnUiThread(new Runnable() {
-                    public void run() {
-                        RunTab.modImage(parent, R.id.run_red, R.drawable.run_red, true);
-                        RunTab.modImage(parent, R.id.run_green, R.drawable.run_green, true);
-                        RunTab.modImage(parent, R.id.run_yellow, R.drawable.run_yellow, true);
-                        RunTab.modImage(parent, R.id.run_cyan, R.drawable.run_cyan, true);
-                        RunTab.modImage(parent, R.id.bin_red, R.drawable.bin_red, true);
-                        RunTab.modImage(parent, R.id.bin_green, R.drawable.bin_green, true);
-                        RunTab.modImage(parent, R.id.bin_yellow, R.drawable.bin_yellow, true);
-                        RunTab.modImage(parent, R.id.bin_cyan, R.drawable.bin_cyan, true);
-                    }
+                parent.runOnUiThread(() -> {
+                    RunTab.modImage(parent, R.id.run_red, R.drawable.run_red, true);
+                    RunTab.modImage(parent, R.id.run_green, R.drawable.run_green, true);
+                    RunTab.modImage(parent, R.id.run_yellow, R.drawable.run_yellow, true);
+                    RunTab.modImage(parent, R.id.run_cyan, R.drawable.run_cyan, true);
+                    RunTab.modImage(parent, R.id.bin_red, R.drawable.bin_red, true);
+                    RunTab.modImage(parent, R.id.bin_green, R.drawable.bin_green, true);
+                    RunTab.modImage(parent, R.id.bin_yellow, R.drawable.bin_yellow, true);
+                    RunTab.modImage(parent, R.id.bin_cyan, R.drawable.bin_cyan, true);
                 });
 
             } else if (result.equals("WAIT")) {
-                progressCheckHandler.postDelayed(progressCheckRunner = new Runnable() {
-                    public void run() {
-                        new NetTask(view, parent).executeOnExecutor(parent.threadPoolExecutor,
-                                parent.serverName + "?cmd=BUSY");
 
-                    }
-                }, 1000);
+                progressCheckHandler.postDelayed(() -> new NetTask(view, parent).executeOnExecutor(parent.threadPoolExecutor,
+                        parent.serverName + "?cmd=BUSY"), 1000);
 
 
             }
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             return null;
         }
         return null;

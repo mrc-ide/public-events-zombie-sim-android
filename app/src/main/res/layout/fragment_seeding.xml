@@ -15,6 +15,7 @@
         android:layout_margin="16dp"
         android:gravity="center_horizontal"
         android:text="@string/number_of_seeds"
+        android:textColor="#003e74"
         android:textSize="32sp"
         android:textStyle="bold" />
 
@@ -26,6 +27,7 @@
         android:max="99"
         android:min="0"
         android:progress="5"
+        android:progressTint = "#009cbc"
         android:scaleX="2"
         android:scaleY="2" />
 
@@ -46,6 +48,7 @@
         android:layout_margin="36dp"
         android:gravity="center_horizontal"
         android:text="@string/within_distance"
+        android:textColor="#003e74"
         android:textSize="32sp"
         android:textStyle="bold" />
 
@@ -57,6 +60,7 @@
         android:max="500"
         android:min="0"
         android:progress="50"
+        android:progressTint = "#009cbc"
         android:scaleX="2"
         android:scaleY="2" />
 
@@ -74,9 +78,10 @@
         android:id="@+id/s_dist_title2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="36dp"
         android:gravity="center_horizontal"
         android:text="of"
+        android:textColor="#003e74"
         android:textSize="24sp"
         android:textStyle="bold" />
 

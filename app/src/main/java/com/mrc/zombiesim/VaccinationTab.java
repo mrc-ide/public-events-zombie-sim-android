@@ -1,6 +1,7 @@
 package com.mrc.zombiesim;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,14 +13,6 @@ import android.widget.TextView;
 
 
 public class VaccinationTab extends Fragment {
-    // It seems we can't rely on the fragment UI to still exist
-    // when saving the state. So we'll copy it to our own state.
-
-    String state_vacc;
-    int state_vacc_progress;
-    String state_vacc_dist;
-    int state_vacc_dist_progress;
-    int state_vacc_city_index;
 
     public VaccinationTab() {
         // Required empty public constructor
@@ -30,8 +23,10 @@ public class VaccinationTab extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_vaccination, container, false);
-        MainActivity.populate_city_spinner(v.findViewById(R.id.vacc_city), v.getContext(),
-                "- Nowhere -");
+        MainActivity ma = (MainActivity) super.getActivity();
+        assert ma != null;
+
+        MainActivity.populate_city_spinner(v.findViewById(R.id.vacc_city), v.getContext());
 
         // Move the vacc coverage bar
 
@@ -42,13 +37,10 @@ public class VaccinationTab extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 MainActivity ma = (MainActivity) getActivity();
-                state_vacc = String.valueOf(vacc_cov_val.getText());
-                state_vacc_progress = vacc_cov_seek.getProgress();
-
-                new NetTask(v, ma).executeOnExecutor(ma.threadPoolExecutor,
-                        ma.serverName + "?cmd=set&param=vaccpc&value=" + vacc_cov_seek.getProgress());
-
-                //http://127.0.0.1:8080/?cmd=set&param=vaccpc&value=45
+                assert ma != null;
+                ma.state_vacc = String.valueOf(vacc_cov_val.getText());
+                ma.state_vacc_progress = vacc_cov_seek.getProgress();
+                ma.sendParams(v, "");
             }
 
             @Override
@@ -57,7 +49,8 @@ public class VaccinationTab extends Fragment {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                vacc_cov_val.setText(progress + " %");
+                String p2 = progress + "%";
+                vacc_cov_val.setText(p2);
             }
         });
 
@@ -70,10 +63,10 @@ public class VaccinationTab extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 MainActivity ma = (MainActivity) getActivity();
-                state_vacc_dist_progress = vacc_dist_seek.getProgress();
-                state_vacc_dist = String.valueOf(vacc_dist_val.getText());
-                new NetTask(v, ma).executeOnExecutor(ma.threadPoolExecutor,
-                        ma.serverName + "?cmd=set&param=vaccrad&value=" + vacc_dist_val.getText());
+                assert ma != null;
+                ma.state_vacc_dist_progress = vacc_dist_seek.getProgress();
+                ma.state_vacc_dist = String.valueOf(vacc_dist_val.getText());
+                ma.sendParams(v, "");
 
                 //http://127.0.0.1:8080/?cmd=set&param=vaccpc&value=45
             }
@@ -84,7 +77,8 @@ public class VaccinationTab extends Fragment {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                vacc_dist_val.setText(progress + " km");
+                String p2 = progress + " km";
+                vacc_dist_val.setText(p2);
             }
         });
 
@@ -95,9 +89,9 @@ public class VaccinationTab extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 MainActivity ma = (MainActivity) getActivity();
-                state_vacc_city_index = i;
-                new NetTask(v, ma).executeOnExecutor(ma.threadPoolExecutor,
-                        ma.serverName + "?cmd=set&param=vacccity&value=" + i);
+                assert ma != null;
+                ma.state_vacc_city_index = i;
+                ma.sendParams(v, "");
 
             }
 
@@ -111,40 +105,41 @@ public class VaccinationTab extends Fragment {
         // Retrieve settings after a rotate
 
         if (savedInstanceState != null) {
-            state_vacc_progress = savedInstanceState.getInt("vacc");
-            state_vacc = savedInstanceState.getString("vacc_text");
-            state_vacc_dist_progress = savedInstanceState.getInt("vacc_dist");
-            state_vacc_dist = savedInstanceState.getString("vacc_dist_text");
-            state_vacc_city_index = savedInstanceState.getInt("vacc_sel");
+            ma.state_vacc_progress = savedInstanceState.getInt("vacc");
+            ma.state_vacc = savedInstanceState.getString("vacc_text");
+            ma.state_vacc_dist_progress = savedInstanceState.getInt("vacc_dist");
+            ma.state_vacc_dist = savedInstanceState.getString("vacc_dist_text");
+            ma.state_vacc_city_index = savedInstanceState.getInt("vacc_sel");
 
-            vacc_cov_seek.setProgress(state_vacc_progress);
-            vacc_cov_val.setText(state_vacc);
-            vacc_dist_seek.setProgress(state_vacc_dist_progress);
-            vacc_dist_val.setText(state_vacc_dist);
-            vacc_city_spinner.setSelection(state_vacc_city_index);
+            vacc_cov_seek.setProgress(ma.state_vacc_progress);
+            vacc_cov_val.setText(ma.state_vacc);
+            vacc_dist_seek.setProgress(ma.state_vacc_dist_progress);
+            vacc_dist_val.setText(ma.state_vacc_dist);
+            vacc_city_spinner.setSelection(ma.state_vacc_city_index);
         }
 
         // Copy init to state
 
-        state_vacc = String.valueOf(vacc_cov_val.getText());
-        state_vacc_progress = vacc_cov_seek.getProgress();
-        state_vacc_dist = String.valueOf(vacc_dist_val.getText());
-        state_vacc_dist_progress = vacc_dist_seek.getProgress();
-        state_vacc_city_index = vacc_city_spinner.getSelectedItemPosition();
+        ma.state_vacc = String.valueOf(vacc_cov_val.getText());
+        ma.state_vacc_progress = vacc_cov_seek.getProgress();
+        ma.state_vacc_dist = String.valueOf(vacc_dist_val.getText());
+        ma.state_vacc_dist_progress = vacc_dist_seek.getProgress();
+        ma.state_vacc_city_index = vacc_city_spinner.getSelectedItemPosition();
 
 
         return v;
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        View v = getView();
-        outState.putInt("vacc", state_vacc_progress);
-        outState.putString("vacc_text", state_vacc);
-        outState.putInt("vacc_dist", state_vacc_dist_progress);
-        outState.putString("vacc_dist_text", state_vacc_dist);
-        outState.putInt("vacc_sel", state_vacc_city_index);
+        MainActivity ma = (MainActivity) super.getActivity();
+        assert ma != null;
+        outState.putInt("vacc", ma.state_vacc_progress);
+        outState.putString("vacc_text", ma.state_vacc);
+        outState.putInt("vacc_dist", ma.state_vacc_dist_progress);
+        outState.putString("vacc_dist_text", ma.state_vacc_dist);
+        outState.putInt("vacc_sel", ma.state_vacc_city_index);
     }
 
 }

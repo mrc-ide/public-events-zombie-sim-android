@@ -1,7 +1,6 @@
 package com.mrc.zombiesim;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -51,11 +50,7 @@ class Updater {
             AlertDialog.Builder alert = new AlertDialog.Builder(ma);
             alert.setTitle("Oops."); //Set Alert dialog title here
             alert.setMessage(err); //Message here
-            alert.setPositiveButton("Oh.", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    dialog.cancel();
-                }
-            });
+            alert.setPositiveButton("Oh.", (dialog, whichButton) -> dialog.cancel());
             alert.setCancelable(false);
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
@@ -90,11 +85,7 @@ class Updater {
             AlertDialog.Builder alert = new AlertDialog.Builder(ma);
             alert.setTitle("Already up to date!"); //Set Alert dialog title here
             alert.setMessage("Version  " + currentVerName + " is the latest."); //Message here
-            alert.setPositiveButton("Alright", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    dialog.cancel();
-                }
-            });
+            alert.setPositiveButton("Alright", (dialog, whichButton) -> dialog.cancel());
             alert.setCancelable(false);
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
@@ -106,17 +97,11 @@ class Updater {
             AlertDialog.Builder alert = new AlertDialog.Builder(ma);
             alert.setTitle("Software Update!"); //Set Alert dialog title here
             alert.setMessage("Update from version  " + currentVerName + " to " + newVerName); //Message here
-            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    String ff = protocol+baseServer+urlAPK;
-                    ma.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(ff)));
-                }
+            alert.setPositiveButton("Yes", (dialog, whichButton) -> {
+                String ff = protocol+baseServer+urlAPK;
+                ma.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(ff)));
             });
-            alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    dialog.cancel();
-                }
-            }); //End of alert.setNegativeButton
+            alert.setNegativeButton("No", (dialog, whichButton) -> dialog.cancel()); //End of alert.setNegativeButton
             alert.setCancelable(false);
             AlertDialog alertDialog = alert.create();
             alertDialog.show();
