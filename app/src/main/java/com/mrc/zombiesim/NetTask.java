@@ -24,14 +24,11 @@ public class NetTask extends AsyncTask<String, Void, String> {
     // Also, AsyncTask appears to be both recommended and deprecated in the
     // docs in favour of Callable. Migrate at some point...
 
-    @SuppressLint("StaticFieldLeak")
-    private final View view;
 
     @SuppressLint("StaticFieldLeak")
     private final MainActivity parent;
 
-    public NetTask(View v, MainActivity p) {
-        view = v;
+    public NetTask(MainActivity p) {
         parent = p;
     }
 
@@ -74,7 +71,7 @@ public class NetTask extends AsyncTask<String, Void, String> {
 
             } else if (result.equals("WAIT")) {
 
-                progressCheckHandler.postDelayed(() -> new NetTask(view, parent).executeOnExecutor(parent.threadPoolExecutor,
+                progressCheckHandler.postDelayed(() -> new NetTask(parent).executeOnExecutor(parent.threadPoolExecutor,
                         parent.serverName + "?cmd=BUSY"), 1000);
 
 

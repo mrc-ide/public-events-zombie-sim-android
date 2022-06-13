@@ -41,7 +41,7 @@ public class VaccinationTab extends Fragment {
                 ma.state_vacc = String.valueOf(vacc_cov_val.getText());
                 ma.state_vacc_progress = vacc_cov_seek.getProgress();
                 System.out.println("VACC_COV_SEEK CHANGED");
-                ma.sendParams(v, "");
+                ma.sendParams("");
             }
 
             @Override
@@ -68,7 +68,7 @@ public class VaccinationTab extends Fragment {
                 ma.state_vacc_dist_progress = vacc_dist_seek.getProgress();
                 ma.state_vacc_dist = String.valueOf(vacc_dist_val.getText());
                 System.out.println("VACC_DIST_SEEK CHANGED");
-                ma.sendParams(v, "");
+                ma.sendParams("");
 
                 //http://127.0.0.1:8080/?cmd=set&param=vaccpc&value=45
             }
@@ -95,7 +95,7 @@ public class VaccinationTab extends Fragment {
                 if (ma.state_vacc_city_index != i) {
                     ma.state_vacc_city_index = i;
                     System.out.println("VACC_CITY_SPINNER CHANGED");
-                    ma.sendParams(v, "");
+                    ma.sendParams("");
                 }
 
             }
@@ -107,44 +107,13 @@ public class VaccinationTab extends Fragment {
 
         });
 
-        // Retrieve settings after a rotate
-/*
-        if (savedInstanceState != null) {
-            ma.state_vacc_progress = savedInstanceState.getInt("vacc");
-            ma.state_vacc = savedInstanceState.getString("vacc_text");
-            ma.state_vacc_dist_progress = savedInstanceState.getInt("vacc_dist");
-            ma.state_vacc_dist = savedInstanceState.getString("vacc_dist_text");
-            ma.state_vacc_city_index = savedInstanceState.getInt("vacc_sel");
-
-            vacc_cov_seek.setProgress(ma.state_vacc_progress);
-            vacc_cov_val.setText(ma.state_vacc);
-            vacc_dist_seek.setProgress(ma.state_vacc_dist_progress);
-            vacc_dist_val.setText(ma.state_vacc_dist);
-            vacc_city_spinner.setSelection(ma.state_vacc_city_index);
-        }
-*/
-        // Copy init to state
-
-        ma.state_vacc = String.valueOf(vacc_cov_val.getText());
-        ma.state_vacc_progress = vacc_cov_seek.getProgress();
-        ma.state_vacc_dist = String.valueOf(vacc_dist_val.getText());
-        ma.state_vacc_dist_progress = vacc_dist_seek.getProgress();
-        ma.state_vacc_city_index = vacc_city_spinner.getSelectedItemPosition();
-
+        vacc_cov_seek.post(() -> vacc_cov_seek.setProgress(ma.state_vacc_progress));
+        vacc_cov_val.post(() -> vacc_cov_val.setText(ma.state_vacc));
+        vacc_dist_seek.post(() -> vacc_dist_seek.setProgress(ma.state_vacc_dist_progress));
+        vacc_dist_val.post(() -> vacc_dist_val.setText(ma.state_vacc_dist));
+        vacc_city_spinner.post(() -> vacc_city_spinner.setSelection(ma.state_vacc_city_index));
 
         return v;
     }
-/*
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        MainActivity ma = (MainActivity) super.getActivity();
-        assert ma != null;
-        outState.putInt("vacc", ma.state_vacc_progress);
-        outState.putString("vacc_text", ma.state_vacc);
-        outState.putInt("vacc_dist", ma.state_vacc_dist_progress);
-        outState.putString("vacc_dist_text", ma.state_vacc_dist);
-        outState.putInt("vacc_sel", ma.state_vacc_city_index);
-    }
-*/
+
 }

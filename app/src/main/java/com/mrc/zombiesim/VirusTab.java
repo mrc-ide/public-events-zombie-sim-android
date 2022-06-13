@@ -31,7 +31,6 @@ public class VirusTab extends Fragment {
         View v = inflater.inflate(R.layout.fragment_virus, container, false);
         MainActivity ma = (MainActivity) super.getActivity();
         assert ma != null;
-
         // Move the R0 seekbar
 
         SeekBar r0_seek = v.findViewById(R.id.r0_seek);
@@ -42,8 +41,7 @@ public class VirusTab extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 ma.state_r0 = String.valueOf(r0_val.getText());
                 ma.state_r0_progress = r0_seek.getProgress();
-                System.out.println("R0 CHANGED");
-                ma.sendParams(v, "");
+                ma.sendParams("");
 
             }
 
@@ -67,8 +65,7 @@ public class VirusTab extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 ma.state_tinf = String.valueOf(tinf_val.getText());
                 ma.state_tinf_progress = tinf_seek.getProgress();
-                System.out.println("TINF CHANGED");
-                ma.sendParams(v, "");
+                ma.sendParams("");
 
                 //http://127.0.0.1:8080/?cmd=set&param=Tinf&value=2
             }
@@ -83,39 +80,12 @@ public class VirusTab extends Fragment {
             }
         });
 
-        // Retrieve settings after a rotate
-/*
-        if (savedInstanceState != null) {
-            ma.state_r0 = savedInstanceState.getString("r0_text");
-            ma.state_r0_progress = savedInstanceState.getInt("r0");
-            ma.state_tinf = savedInstanceState.getString("tinf_text");
-            ma.state_tinf_progress = savedInstanceState.getInt("tinf");
-
-            r0_val.setText(ma.state_r0);
-            r0_seek.setProgress(ma.state_r0_progress);
-            tinf_val.setText(ma.state_tinf);
-            tinf_seek.setProgress(ma.state_tinf_progress);
-        }
-*/
-        // Copy init to state
-
-        ma.state_r0_progress = r0_seek.getProgress();
-        ma.state_r0 = String.valueOf(r0_val.getText());
-        ma.state_tinf_progress = tinf_seek.getProgress();
-        ma.state_tinf = String.valueOf(tinf_val.getText());
+        r0_seek.post(() -> r0_seek.setProgress(ma.state_r0_progress));
+        r0_val.post(() -> r0_val.setText(ma.state_r0));
+        tinf_seek.post(() -> tinf_seek.setProgress(ma.state_tinf_progress));
+        tinf_val.post(() -> tinf_val.setText(ma.state_tinf));
 
         return v;
     }
-/*
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        MainActivity ma = (MainActivity) super.getActivity();
-        assert ma != null;
-        outState.putInt("r0", ma.state_r0_progress);
-        outState.putString("r0_text", ma.state_r0);
-        outState.putInt("tinf", ma.state_tinf_progress);
-        outState.putString("tinf_text", ma.state_tinf);
-    }
-*/
+
 }

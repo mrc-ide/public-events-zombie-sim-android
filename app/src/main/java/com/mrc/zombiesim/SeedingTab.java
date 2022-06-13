@@ -38,7 +38,7 @@ public class SeedingTab extends Fragment {
                 ma.state_no_seeds = String.valueOf(seeds_val.getText());
                 ma.state_no_seeds_progress = seeds_seek.getProgress();
                 System.out.println("SEED_SEEK CHANGED");
-                ma.sendParams(v, "");
+                ma.sendParams("");
             }
 
             @Override
@@ -63,7 +63,7 @@ public class SeedingTab extends Fragment {
                 ma.state_seed_dist_progress = seed_dist_seek.getProgress();
                 ma.state_seed_dist = String.valueOf(seed_dist_val.getText());
                 System.out.println("SEED_DIST CHANGED");
-                ma.sendParams(v, "");
+                ma.sendParams("");
 
             }
 
@@ -89,7 +89,7 @@ public class SeedingTab extends Fragment {
                 if (ma.state_seed_city_index != i) {
                     ma.state_seed_city_index = i;
                     System.out.println("SEED_CITY CHANGED");
-                    ma.sendParams(v, "");
+                    ma.sendParams("");
                 }
 
             }
@@ -99,45 +99,13 @@ public class SeedingTab extends Fragment {
 
 
         });
-
-        // Retrieve settings after a rotate
-/*
-        if (savedInstanceState != null) {
-            ma.state_no_seeds_progress = savedInstanceState.getInt("seed");
-            ma.state_no_seeds = savedInstanceState.getString("seed_text");
-            ma.state_seed_dist_progress = savedInstanceState.getInt("seed_dist");
-            ma.state_seed_dist = savedInstanceState.getString("seed_dist_text");
-            ma.state_seed_city_index = savedInstanceState.getInt("seed_sel");
-
-            seeds_seek.setProgress(ma.state_no_seeds_progress);
-            seeds_val.setText(ma.state_no_seeds);
-            seed_dist_seek.setProgress(ma.state_seed_dist_progress);
-            seed_dist_val.setText(ma.state_seed_dist);
-            seed_city_spinner.setSelection(ma.state_seed_city_index);
-
-        }
-*/
-        // Copy init to state
-
-        ma.state_no_seeds = String.valueOf(seeds_val.getText());
-        ma.state_no_seeds_progress = seeds_seek.getProgress();
-        ma.state_seed_dist = String.valueOf(seed_dist_val.getText());
-        ma.state_seed_dist_progress = seed_dist_seek.getProgress();
-        ma.state_seed_city_index = seed_city_spinner.getSelectedItemPosition();
+        seeds_seek.post(() -> seeds_seek.setProgress(ma.state_no_seeds_progress));
+        seeds_val.post(() -> seeds_val.setText(ma.state_no_seeds));
+        seed_dist_seek.post(() -> seed_dist_seek.setProgress(ma.state_seed_dist_progress));
+        seed_dist_val.post(() -> seed_dist_val.setText(ma.state_seed_dist));
+        seed_city_spinner.post(() -> seed_city_spinner.setSelection(ma.state_seed_city_index));
 
         return v;
     }
-/*
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        MainActivity ma = (MainActivity) super.getActivity();
-        assert ma != null;
-        outState.putInt("seed", ma.state_no_seeds_progress);
-        outState.putString("seed_text", ma.state_no_seeds);
-        outState.putInt("seed_dist", ma.state_seed_dist_progress);
-        outState.putString("seed_dist_text", ma.state_seed_dist);
-        outState.putInt("seed_sel", ma.state_seed_city_index);
-    }
-*/
+
 }

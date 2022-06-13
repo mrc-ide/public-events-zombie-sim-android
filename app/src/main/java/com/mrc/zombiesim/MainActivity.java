@@ -1,7 +1,10 @@
 package com.mrc.zombiesim;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -20,7 +23,9 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -61,28 +66,28 @@ public class MainActivity extends AppCompatActivity {
     // Send all the state to the java client
     //////////////////////////////////////////////////////////////
 
-    String state_r0;
-    int state_r0_progress;
-    String state_tinf;
-    int state_tinf_progress;
+    String state_r0 = "1.80";
+    int state_r0_progress = 53;
+    String state_tinf = "3.00";
+    int state_tinf_progress = 50;
 
-    String state_vacc;
-    int state_vacc_progress;
-    String state_vacc_dist;
-    int state_vacc_dist_progress;
-    int state_vacc_city_index;
+    String state_vacc = "50 %";
+    int state_vacc_progress = 50;
+    String state_vacc_dist = "50 km";
+    int state_vacc_dist_progress = 50;
+    int state_vacc_city_index = 0;
 
-    String state_no_seeds;
-    int state_no_seeds_progress;
-    String state_seed_dist;
-    int state_seed_dist_progress;
-    int state_seed_city_index;
+    String state_no_seeds = "5";
+    int state_no_seeds_progress = 5;
+    String state_seed_dist = "50 km";
+    int state_seed_dist_progress = 50;
+    int state_seed_city_index = 0;
 
     int state_mobility = 2;
 
     boolean state_busy = false;
 
-    public void sendParams(View v, String run_msg) {
+    public void sendParams(String run_msg) {
         if (run_msg.equals("")) run_msg = "0";
 
         String params = "R0;Tinf;vaccpc;vaccrad;vacccity;seeds;seedrad;seedcity;mobility;net_msg";
@@ -91,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                       state_no_seeds + ";" + state_seed_dist_progress + ";" + state_seed_city_index + ";" +
                       state_mobility + ";" + run_msg;
 
-        new NetTask(v, this).executeOnExecutor(threadPoolExecutor,
+        new NetTask(this).executeOnExecutor(threadPoolExecutor,
                 serverName + "?cmd=set&param=" + params + "&value=" + vals);
     }
 
@@ -99,6 +104,26 @@ public class MainActivity extends AppCompatActivity {
     // The popup menu - Check for Updates, Set Server, or About //
     //////////////////////////////////////////////////////////////
 
+    private void setSeekbar(int id, int progress) {
+        SeekBar sb = findViewById(id);
+        if (sb != null) {
+            sb.setProgress(progress);
+        }
+    }
+
+    private void setText(int id, String s) {
+        TextView tv = findViewById(id);
+        if (tv != null) {
+            tv.setText(s);
+        }
+    }
+
+    private void setSpinner(int id, int v) {
+        Spinner sp = findViewById(id);
+        if (sp != null) {
+            sp.setSelection(v);
+        }
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
@@ -137,6 +162,49 @@ public class MainActivity extends AppCompatActivity {
             ver.setPositiveButton("OK", (dialog, whichButton) -> dialog.cancel());
             AlertDialog ad = ver.create();
             ad.show();
+            return true;
+        }
+
+        if (item.getItemId() == R.id.reset_params) {
+            state_r0_progress = 53;
+            state_r0 = "1.80";
+            setSeekbar(R.id.r0_seek, state_r0_progress);
+            setText(R.id.r0_value, state_r0);
+
+            state_tinf_progress = 100;
+            state_tinf = "3.00";
+            setSeekbar(R.id.tinf_seek, state_tinf_progress);
+            setText(R.id.tinf_value, state_tinf);
+
+            state_vacc_progress = 50;
+            state_vacc = "50 %";
+            setSeekbar(R.id.vacc_cov_seek, state_vacc_progress);
+            setText(R.id.vacc_cov_val, state_vacc);
+
+            state_vacc_dist_progress = 50;
+            state_vacc_dist = "50 km";
+            setSeekbar(R.id.vacc_dist_seek, state_vacc_dist_progress);
+            setText(R.id.vacc_dist_val, state_vacc_dist);
+
+            state_no_seeds_progress = 5;
+            state_no_seeds = "5";
+            setSeekbar(R.id.seeds_seek, state_no_seeds_progress);
+            setText(R.id.seeds_val, state_no_seeds);
+
+            state_seed_dist_progress = 50;
+            state_seed_dist = "50 km";
+            setSeekbar(R.id.seed_dist_seek, state_seed_dist_progress);
+            setText(R.id.seed_dist_val, state_seed_dist);
+
+            setSpinner(R.id.vacc_city, 0);
+            setSpinner(R.id.seed_city, 0);
+
+            RadioButton rb = findViewById(R.id.mobility_med);
+            if (rb!= null) rb.setChecked(true);
+            state_mobility = 2;
+
+            sendParams("");
+
         }
 
         return true;

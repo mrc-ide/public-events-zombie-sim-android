@@ -55,7 +55,7 @@ public class RunTab extends Fragment {
                 else {
                     parent.state_busy = true;
                     updateButtons(parent);
-                    parent.sendParams(v1, net_msg);
+                    parent.sendParams(net_msg);
                 }
 
             });
