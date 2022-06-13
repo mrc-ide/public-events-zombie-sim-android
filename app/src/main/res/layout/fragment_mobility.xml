@@ -20,7 +20,6 @@
         android:textStyle="bold" />
 
 <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -34,15 +33,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom = "30dp"
-        android:checked = "true"
         android:text="Slow crawl"/>
     <RadioButton android:id="@+id/mobility_med"
         android:textSize="36sp"
         android:paddingLeft = "50dp"
+        android:checked = "true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom = "30dp"
-        android:text="Moderate Pace"/>
+        android:text="Medium Pace"/>
     <RadioButton android:id="@+id/mobility_fast"
         android:textSize="36sp"
         android:layout_width="wrap_content"

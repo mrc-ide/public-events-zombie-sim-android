@@ -34,6 +34,7 @@ public class MobilityTab extends Fragment {
         RadioButton rb_med = v.findViewById(R.id.mobility_med);
         RadioButton rb_fast = v.findViewById(R.id.mobility_fast);
         RadioButton rb_fly = v.findViewById(R.id.mobility_fly);
+        rb_med.setChecked(true);
 
         addMobilityRadio(rb_slow, 1, ma.state_mobility == 1);
         addMobilityRadio(rb_med, 2, ma.state_mobility == 2);

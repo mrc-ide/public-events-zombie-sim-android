@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import java.io.BufferedReader;
@@ -45,12 +47,12 @@ public class MainActivity extends AppCompatActivity {
 
     Executor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize,
             keepAliveTime, TimeUnit.SECONDS, workQueue);
-
+/*
     public Updater U = new Updater("https://", "mrcdata.dide.ic.ac.uk",
             "/resources/ZombieSim_version.txt",
             "/resources/ZombieSim.apk",
             internal_version, version, this, true);
-
+*/
     TabLayout tabLayout;
     ZombieViewPager viewPager;
     ZombieFragmentPagerAdapter adapter;
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     int state_seed_dist_progress;
     int state_seed_city_index;
 
-    int state_mobility = 1;
+    int state_mobility = 2;
 
     boolean state_busy = false;
 
@@ -100,12 +102,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-
+/*
         if (item.getItemId() == R.id.update_check_menu) {
             //U.tryUpdate(false);
             return true;
         }
-
+*/
         if (item.getItemId() == R.id.server_url_menu) {
             AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
             alert.setTitle("Set Server URL"); //Set Alert dialog title here
@@ -170,10 +172,10 @@ public class MainActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setIcon(R.drawable.zombie_app);
+        actionBar.setIcon(R.drawable.zombie_app_yellow);
         actionBar.setTitle(Html.fromHtml("&nbsp;&nbsp;&nbsp;<font color='#003e74'>Zombie Spatial Epidemic Simulator</font>"));
 
-        ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#ffffff"));
+        ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#ffdd00"));
         actionBar.setBackgroundDrawable(colorDrawable);
 
         // Load preferences
@@ -209,8 +211,6 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-
-
 
     }
 
