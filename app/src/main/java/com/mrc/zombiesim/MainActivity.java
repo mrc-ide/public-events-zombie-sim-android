@@ -39,8 +39,8 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity {
 
     public static final String PREFS_NAME = "zombie_sim";
-    public static final String version = "1.0";
-    public static int internal_version = 1;
+    public static final String version = "1.1";
+    public static int internal_version = 11;
 
     int corePoolSize = 60;
     int maximumPoolSize = 80;
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     String state_r0 = "1.80";
     int state_r0_progress = 53;
     String state_tinf = "3.00";
-    int state_tinf_progress = 50;
+    int state_tinf_progress = 100;
 
     String state_vacc = "50 %";
     int state_vacc_progress = 50;
@@ -107,21 +107,28 @@ public class MainActivity extends AppCompatActivity {
     private void setSeekbar(int id, int progress) {
         SeekBar sb = findViewById(id);
         if (sb != null) {
-            sb.setProgress(progress);
+            sb.post(() -> sb.setProgress(progress));
         }
     }
 
     private void setText(int id, String s) {
         TextView tv = findViewById(id);
         if (tv != null) {
-            tv.setText(s);
+            tv.post(() -> tv.setText(s));
         }
     }
 
     private void setSpinner(int id, int v) {
         Spinner sp = findViewById(id);
         if (sp != null) {
-            sp.setSelection(v);
+            sp.post(new Runnable() { public void run() {
+                System.out.println("POST - "+sp.toString()+", setting to "+v);
+                sp.setSelection(v);
+            }});
+
+        } else {
+            System.out.println("Set Spinner, sp was null");
+
         }
     }
     @Override
@@ -196,11 +203,16 @@ public class MainActivity extends AppCompatActivity {
             setSeekbar(R.id.seed_dist_seek, state_seed_dist_progress);
             setText(R.id.seed_dist_val, state_seed_dist);
 
+            state_vacc_city_index = 0;
             setSpinner(R.id.vacc_city, 0);
+            state_seed_city_index = 0;
             setSpinner(R.id.seed_city, 0);
 
+            System.out.println("In the reset code. vci = "+state_vacc_city_index);
+
+
             RadioButton rb = findViewById(R.id.mobility_med);
-            if (rb!= null) rb.setChecked(true);
+            if (rb!= null) rb.post(() -> rb.setChecked(true));
             state_mobility = 2;
 
             sendParams("");
@@ -211,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public static void populate_city_spinner(Spinner spinner, Context c) {
+    public static void populate_city_spinner(Spinner spinner, Context c, String first) {
         ArrayList<String> cities = new ArrayList<>();
 
         try {
@@ -225,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        if (first != null) cities.set(0, first);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(c,
                 android.R.layout.simple_spinner_item, cities);
@@ -249,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
         // Load preferences
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        serverName = settings.getString("server", "http://192.168.1.15:8080/");
+        serverName = settings.getString("server", "http://192.168.2.5:8080/");
 
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);

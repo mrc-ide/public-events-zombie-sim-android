@@ -12,7 +12,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 public class SeedingTab extends Fragment {
-
+    int ignore_first_item_select = 0;
     public SeedingTab() {
         // Required empty public constructor
     }
@@ -20,10 +20,11 @@ public class SeedingTab extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ignore_first_item_select = 0;
         View v = inflater.inflate(R.layout.fragment_seeding, container, false);
         MainActivity ma = (MainActivity) super.getActivity();
         assert ma != null;
-        MainActivity.populate_city_spinner(v.findViewById(R.id.seed_city), v.getContext());
+        MainActivity.populate_city_spinner(v.findViewById(R.id.seed_city), v.getContext(), null);
 
         // Move the number of seeds bar
 
@@ -84,6 +85,10 @@ public class SeedingTab extends Fragment {
         seed_city_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (ignore_first_item_select == 0) {
+                    ignore_first_item_select = 1;
+                    return;
+                }
                 MainActivity ma = (MainActivity) getActivity();
                 assert ma != null;
                 if (ma.state_seed_city_index != i) {

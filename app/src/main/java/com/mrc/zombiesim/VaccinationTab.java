@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 
 public class VaccinationTab extends Fragment {
+    int ignore_first_item_select;
 
     public VaccinationTab() {
         // Required empty public constructor
@@ -22,16 +23,19 @@ public class VaccinationTab extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        boolean disabled = true;
+        ignore_first_item_select = 0;
         View v = inflater.inflate(R.layout.fragment_vaccination, container, false);
         MainActivity ma = (MainActivity) super.getActivity();
         assert ma != null;
 
-        MainActivity.populate_city_spinner(v.findViewById(R.id.vacc_city), v.getContext());
+        MainActivity.populate_city_spinner(v.findViewById(R.id.vacc_city), v.getContext(), "- No Vacc -");
 
         // Move the vacc coverage bar
 
         SeekBar vacc_cov_seek = v.findViewById(R.id.vacc_cov_seek);
         TextView vacc_cov_val = v.findViewById(R.id.vacc_cov_val);
+
 
         vacc_cov_seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -67,7 +71,6 @@ public class VaccinationTab extends Fragment {
                 assert ma != null;
                 ma.state_vacc_dist_progress = vacc_dist_seek.getProgress();
                 ma.state_vacc_dist = String.valueOf(vacc_dist_val.getText());
-                System.out.println("VACC_DIST_SEEK CHANGED");
                 ma.sendParams("");
 
                 //http://127.0.0.1:8080/?cmd=set&param=vaccpc&value=45
@@ -90,11 +93,16 @@ public class VaccinationTab extends Fragment {
         vacc_city_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (ignore_first_item_select == 0) {
+                    ignore_first_item_select = 1;
+                    return;
+                }
                 MainActivity ma = (MainActivity) getActivity();
                 assert ma != null;
+                System.out.println("ON SELECTED - i = "+i+", L = "+l+", state = "+ma.state_vacc_city_index);
                 if (ma.state_vacc_city_index != i) {
                     ma.state_vacc_city_index = i;
-                    System.out.println("VACC_CITY_SPINNER CHANGED");
+                    System.out.println("VACC_CITY_SPINNER CHANGED to "+i);
                     ma.sendParams("");
                 }
 
